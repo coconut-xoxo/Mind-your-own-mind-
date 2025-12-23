@@ -70,7 +70,7 @@ st.markdown("""
 
 with st.sidebar:
     # Logo section
-    st.image(r"C:\Users\LENOVO\Desktop\CAPSTONE\ai project image.jpg", use_container_width=True)
+    st.image(st.image("ai project image.jpg", use_container_width=True))
     st.markdown("<h2 style='text-align: center; margin-bottom: -10px;'>MindSync</h2>", unsafe_allow_html=True)
     st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
 
@@ -278,3 +278,4 @@ with col_b:
             st.info('No data file found.')
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
