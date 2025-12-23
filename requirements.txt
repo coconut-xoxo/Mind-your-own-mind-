@@ -6,3 +6,4 @@ seaborn
 streamlit-option-menu
 scikit-learn
 plotly
+TextBlob
