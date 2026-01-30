@@ -12,7 +12,6 @@ import os
 import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
-st.write("OS module loaded:", os)
 
 conn = sqlite3.connect("wellness.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -256,11 +255,9 @@ elif choice == "AI Insights":
 
     else:
         df = data.sort_values("Date")
-        df["Detailed_AI_Insight"] = df.apply(
-            generate_detailed_insight, axis=1
-        )
-
+        df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
         st.write(df["Detailed_AI_Insight"].iloc[-1])
+
 
         # Rule: 3 consecutive low mood days
         if len(df) >= 3:
@@ -342,6 +339,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
