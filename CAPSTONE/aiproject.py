@@ -14,25 +14,104 @@ from datetime import datetime
 from streamlit_option_menu import option_menu
 DATA_FILE = "wellness_data.csv"
 df = pd.read_csv(DATA_FILE) # This creates the 'df' variable
-def generate_detailed_insight(row):
+# ===============================
+# Function to generate detailed AI insights
+# ===============================
+def generate_detailed_insight(row, df=None):
     """
-    Takes a row of the DataFrame and returns a string insight.
-    Example: uses Mood, Sleep, Stress, Sentiment columns.
+    Generates a detailed, paragraph-style AI insight for a single row.
+    Each insight includes:
+    - Observation (what)
+    - Importance (why)
+    - Actionable advice (how)
+    - Optional trend / comparison context
     """
+    date = row.get('Date', 'Unknown')
     mood = row.get('Mood', 0)
     sleep = row.get('Sleep', 0)
     stress = row.get('Stress', 0)
     sentiment = row.get('Sentiment', 0)
+    screentime = row.get('ScreenTime', 0)
 
-    insight = f"Mood: {mood}, Sleep: {sleep} hrs, Stress: {stress}, Sentiment: {sentiment}"
+    insight = f"📅 Date: {date}\n\n"
 
-    # You can add more rules here if you want
+    # Paragraph 1: Overview
+    insight += (
+        f"On this day, your recorded mood was {mood}/5, you slept for {sleep} hours, "
+        f"experienced a stress level of {stress}/10, spent approximately {screentime} hours on screens, "
+        f"and your written notes suggest a sentiment score of {sentiment:.2f}. "
+        f"This gives us a snapshot of your emotional and physical state for the day.\n\n"
+    )
+
+    # Paragraph 2: Mood Analysis
     if mood < 3:
-        insight += " → Low mood detected."
+        insight += (
+            f"Your mood is noticeably low. Sustained low mood can impact concentration, motivation, and overall well-being. "
+            f"Understanding the reasons behind this dip is important. Consider reflecting on what might have triggered these feelings today. "
+            f"Reaching out to a trusted friend, family member, or counselor can provide support and perspective.\n\n"
+        )
+    elif mood == 5:
+        insight += (
+            f"Your mood is excellent today! Maintaining this positive emotional state is important for productivity and resilience. "
+            f"Continue engaging in activities that make you feel fulfilled and energized.\n\n"
+        )
+    else:
+        insight += (
+            f"Your mood today is moderate. Keep observing patterns to see if certain activities or habits consistently affect how you feel. "
+            f"Awareness is the first step toward emotional balance.\n\n"
+        )
+
+    # Paragraph 3: Sleep Analysis
     if sleep < 6:
-        insight += " → Low sleep hours."
+        insight += (
+            f"Sleep duration is below the recommended threshold. Insufficient sleep can reduce alertness, impair memory, "
+            f"and amplify stress or negative emotions. Prioritize establishing a consistent sleep schedule, limit screen exposure before bedtime, "
+            f"and consider relaxing routines such as reading or light stretching to improve sleep quality.\n\n"
+        )
+    elif sleep > 9:
+        insight += (
+            f"Sleep duration is quite high today. While rest is important, unusually long sleep may indicate fatigue or underlying stress. "
+            f"Monitor your energy levels and ensure that sleep quality is restorative.\n\n"
+        )
+    else:
+        insight += (
+            f"Sleep duration is within a healthy range. Maintaining consistent sleep helps stabilize mood and cognitive performance.\n\n"
+        )
+
+    # Paragraph 4: Stress & Screen Time
     if stress > 6:
-        insight += " → High stress."
+        insight += (
+            f"Stress levels are elevated today. Chronic high stress can affect both physical and mental health. "
+            f"Consider brief relaxation exercises, meditation, or short walks to reduce tension. "
+            f"Balancing workload and taking intentional breaks can also help mitigate stress accumulation.\n\n"
+        )
+    if screentime > 5:
+        insight += (
+            f"Screen time is high, which can contribute to eye strain, fatigue, and heightened stress. "
+            f"Try breaking tasks into screen-free intervals, engaging in offline hobbies, or limiting social media usage. "
+            f"These small changes can improve focus and mental clarity.\n\n"
+        )
+
+    # Paragraph 5: Sentiment vs Mood
+    if (sentiment < -0.2 and mood >= 4) or (sentiment > 0.2 and mood <= 2):
+        insight += (
+            f"There appears to be a mismatch between your textual sentiment and self-reported mood. "
+            f"This could indicate underlying emotions that aren’t immediately visible in your self-report. "
+            f"Reflecting on this discrepancy can help you better understand and articulate your feelings, "
+            f"improving self-awareness over time.\n\n"
+        )
+
+    # Paragraph 6: Trend / optional comparison
+    if df is not None and len(df) >= 7:
+        recent_mood = df['Mood'].tail(7).mean()
+        if mood < recent_mood - 1:
+            insight += (
+                f"Compared to the past week, your mood today is lower than your recent average ({recent_mood:.1f}/5). "
+                f"Noticing these trends helps identify patterns and potential triggers, allowing for more proactive mental health care.\n\n"
+            )
+
+    insight += "✅ Keep logging consistently. Regular entries help detect meaningful patterns and allow AI to provide more personalized and actionable insights over time.\n"
+
     return insight
 
 
@@ -239,20 +318,61 @@ elif choice == "AI Insights":
     if data.empty:
         st.info("Add more entries to unlock AI insights.")
     else:
-        # Sort the data by Date
-        df = data.sort_values("Date").copy()  # .copy() to avoid SettingWithCopyWarning
-
-        # Initialize insights list
-        insights = []
-
-        # Generate AI insights for each row
-        df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
-
-        # Display the most recent AI insight
+        # Sort data
+        df = data.sort_values("Date").copy()
+        
+        # Generate detailed AI insights
+        df["Detailed_AI_Insight"] = df.apply(lambda row: generate_detailed_insight(row, df), axis=1)
+        
+        # Display latest AI insight
+        st.subheader("Latest AI Insight")
         st.write(df["Detailed_AI_Insight"].iloc[-1])
 
-        # Optional: show the full table with insights
-        st.dataframe(df)
+        # Optional: Pattern-based suggestions (like low mood streak, sleep correlation)
+        insights = []
+
+        # Rule: 3 consecutive low mood days
+        if len(df) >= 3:
+            last3 = df['Mood'].tail(3)
+            if all(last3 < 3):
+                insights.append((
+                    'Low mood streak',
+                    "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."
+                ))
+
+        # Sleep correlation
+        if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
+            insights.append((
+                'Sleep & Mood',
+                'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'
+            ))
+
+        # Screen time
+        if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
+            insights.append((
+                'Screen & Stress',
+                'High average screen time is associated with higher stress. Introduce short screen breaks.'
+            ))
+
+        # Display pattern-based insights
+        st.subheader("Detected Patterns / Suggestions")
+        if not insights:
+            st.success("No concerning patterns detected — keep logging consistently!")
+        else:
+            for title, text in insights:
+                st.warning(f"**{title}**: {text}")
+
+        # Optional: Simple Mood Prediction Demo
+        if len(df) >= 5:
+            st.markdown('### Mood Prediction (demo)')
+            X = df[['Sleep']].values
+            y = df['Mood'].values
+            model = LinearRegression().fit(X, y)
+            next_sleep = st.number_input(
+                'If you sleep (hrs) tomorrow...', min_value=0.0, max_value=24.0, value=7.0, step=0.5
+            )
+            pred = model.predict([[next_sleep]])[0]
+            st.info(f'Predicted mood (1–5): {pred:.2f} based on sleep hours using a simple linear model')
 
         # =========================
         # Pattern-based insights
@@ -353,6 +473,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
