@@ -115,7 +115,6 @@ data = load_data()
 data = load_data()
 df = pd.DataFrame(data)
 
-st.write(df.columns)   # 👈 HERE. EXACTLY HERE.
 
 # -----------------------------
 # Top navigation using option_menu
@@ -347,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
