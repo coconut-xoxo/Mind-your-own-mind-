@@ -480,23 +480,67 @@ elif choice == "AI Insights":
 # -----------------------------
 elif choice == "Premium":
     st.header("✨ Premium Features (Mock)")
-    st.markdown("This section shows ideas you could build for a paid tier or institutional product:")
-    st.markdown("- Weekly PDF summaries with embedded charts and recommendations\n- Personalized AI coach (chat + action plans)\n- School-wide dashboards (anonymized) for early intervention\n- Export to Google Sheets / Google Drive sync")
+    st.markdown(
+        "This is a demo of what a **paid tier** could offer. Imagine weekly summaries, personalized tips, and interactive charts to guide your mental well-being!"
+    )
+    st.markdown("""
+**Potential Premium Features**:
+- Weekly PDF summaries with charts and AI recommendations
+- Personalized AI coach (chat + action plans)
+- School/Team dashboards for early intervention (anonymized)
+- Export to Google Sheets / Drive sync
+""")
 
-    st.markdown('### Mock: Weekly Summary')
+    st.markdown('### 🗓 Your Weekly Summary')
     if data.empty:
-        st.info('Add data to create summaries.')
+        st.info('Add data in your Daily Log to see weekly insights.')
     else:
         df = data.sort_values('Date')
         last7 = df.tail(7)
-        summary = {
-            'avg_mood': last7['Mood'].mean(),
-            'avg_sleep': last7['Sleep'].mean(),
-            'avg_stress': last7['Stress'].mean(),
-            'total_exercise_mins': last7['Exercise'].sum()
-        }
-        st.json(summary)
-        st.markdown('Note: Implementing real premium features would require user auth and backend storage.')
+
+        # 1️⃣ Weekly Stats
+        avg_mood = last7['Mood'].mean()
+        avg_sleep = last7['Sleep'].mean()
+        avg_stress = last7['Stress'].mean()
+        total_exercise = last7['Exercise'].sum()
+
+        st.markdown(f"**Mood:** {avg_mood:.1f}/5 {'😄' if avg_mood>=4 else '😐' if avg_mood>=3 else '😔'}")
+        st.markdown(f"**Sleep:** {avg_sleep:.1f} hrs/night {'💤 Good!' if avg_sleep>=7 else '😴 Try to improve'}")
+        st.markdown(f"**Stress:** {avg_stress:.1f}/10 {'😌 Manageable' if avg_stress<=5 else '😣 Take breaks'}")
+        st.markdown(f"**Exercise:** {total_exercise:.0f} mins total this week {'💪 Nice job!' if total_exercise>=150 else '🏃 Keep moving!'}")
+
+        # 2️⃣ Weekly Bar Chart
+        st.subheader("Weekly Overview Chart")
+        weekly_chart = go.Figure()
+        weekly_chart.add_trace(go.Bar(x=last7['Date'].dt.strftime('%a'), y=last7['Mood'], name='Mood', marker_color='mediumseagreen'))
+        weekly_chart.add_trace(go.Bar(x=last7['Date'].dt.strftime('%a'), y=last7['Sleep'], name='Sleep', marker_color='royalblue'))
+        weekly_chart.add_trace(go.Bar(x=last7['Date'].dt.strftime('%a'), y=last7['Stress'], name='Stress', marker_color='tomato'))
+        weekly_chart.update_layout(
+            barmode='group',
+            title='Mood, Sleep & Stress Over the Last 7 Days',
+            yaxis=dict(title='Score / Hours'),
+            template='plotly_white'
+        )
+        st.plotly_chart(weekly_chart, use_container_width=True)
+
+        # 3️⃣ Fun AI Coach Suggestions
+        st.subheader("🤖 Weekly AI Coach Recommendations")
+        tips = []
+        if avg_mood < 3:
+            tips.append("Your mood was low this week. Try journaling your thoughts or talking to someone you trust. Small daily wins count!")
+        if avg_sleep < 7:
+            tips.append("Sleep was slightly below ideal. Prioritize consistent bedtime and screen-free wind-down routines.")
+        if avg_stress > 6:
+            tips.append("Stress levels were high. Try short mindfulness exercises or walks to reset.")
+        if total_exercise < 150:
+            tips.append("Aim for at least 30 minutes of activity per day. Even light walks count!")
+        if avg_mood >=4 and avg_sleep>=7 and avg_stress<=5 and total_exercise>=150:
+            tips.append("Awesome week! 🎉 Keep up your healthy habits!")
+
+        for tip in tips:
+            st.info(tip)
+
+        st.markdown('Note: Implementing real premium features would require user authentication and backend storage, but this gives a fun preview!')
 
 # -----------------------------
 # Footer: data management controls
@@ -517,6 +561,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
