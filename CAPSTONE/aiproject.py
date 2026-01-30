@@ -214,25 +214,57 @@ with st.sidebar:
 # -----------------------------
 if choice == "Home":
     st.header("🌈 Mind Your Own Mind")
-    st.markdown("Welcome — log daily wellness, explore interactive charts, and get simple AI insights. This demo stores data locally in a CSV called wellness_data.csv.")
+    st.markdown(
+        "Welcome! Log your daily wellness, explore interactive charts, and get simple AI insights. "
+        "This demo stores data locally in `wellness_data.csv`."
+    )
 
     col1, col2, col3 = st.columns([1,2,1])
     with col1:
-        st.metric("Entries", len(data), delta=None)
+        st.metric("📒 Entries", len(data), delta=None)
     with col2:
         if not data.empty:
             avg_mood = data['Mood'].mean()
             avg_sleep = data['Sleep'].mean()
-            st.metric("Avg Mood", f"{avg_mood:.2f} / 5", delta=None)
-            st.metric("Avg Sleep", f"{avg_sleep:.1f} hrs", delta=None)
+            # Mood metric with emojis
+            mood_emoji = "😄" if avg_mood >= 4 else "😐" if avg_mood >= 3 else "😔"
+            st.metric("😊 Avg Mood", f"{avg_mood:.2f} / 5 {mood_emoji}", delta=None)
+            sleep_emoji = "💤" if avg_sleep >= 7 else "😴"
+            st.metric("🛌 Avg Sleep", f"{avg_sleep:.1f} hrs {sleep_emoji}", delta=None)
         else:
             st.info("No data yet — go to 'Daily Log' to add your first entry")
     with col3:
-        st.metric("Premium Ideas", "Available", delta=None)
+        st.metric("✨ Premium Ideas", "Available", delta=None)
 
     st.markdown("---")
-    st.subheader("How this helps")
-    st.markdown("- Quick daily logging that takes 30 seconds.\n- Interactive trends to spot patterns (e.g., low sleep → low mood).\n- Simple, interpretable AI features to showcase data science in psychology.")
+
+    # Fun Weekly Snapshot
+    st.subheader("📊 Weekly Snapshot")
+    if not data.empty:
+        last7 = data.tail(7)
+        avg_week_mood = last7['Mood'].mean()
+        avg_week_sleep = last7['Sleep'].mean()
+        st.markdown(f"- Avg Mood this week: **{avg_week_mood:.2f}** {'😄 Keep it up!' if avg_week_mood>=4 else '😐 Could improve'}")
+        st.markdown(f"- Avg Sleep this week: **{avg_week_sleep:.1f} hrs** {'💤 Good!' if avg_week_sleep>=7 else '😴 Try to catch up'}")
+        st.progress(min(avg_week_mood/5, 1.0))  # Visual bar for mood
+        st.progress(min(avg_week_sleep/9, 1.0))  # Visual bar for sleep
+    else:
+        st.markdown("- Log entries to see weekly insights!")
+
+    st.markdown("---")
+
+    st.subheader("How this helps 🛠️")
+    st.markdown("""
+- Quick daily logging that takes **30 seconds** ⏱️  
+- **Interactive trends** to spot patterns (e.g., low sleep → low mood) 📉📈  
+- Simple, interpretable **AI insights** to showcase data science in psychology 🤖  
+- Fun **weekly feedback and suggestions** to keep you motivated 🌟
+""")
+
+    # Motivational / playful tip
+    if not data.empty:
+        st.markdown("💡 **Tip of the Day:** Try to add at least one positive note in your journal today! Even small wins count.")
+
 
 # -----------------------------
 # Daily Log
@@ -561,6 +593,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
