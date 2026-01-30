@@ -248,17 +248,18 @@ elif choice == "Visual Insights":
 # -----------------------------
 elif choice == "AI Insights":
     st.header("🤖 AI Insights & Suggestions")
+
     if data.empty:
-        st.info('Add more entries to unlock AI insights.') 
-    if not df.empty:
-    df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
-    st.write(df["Detailed_AI_Insight"].iloc[-1])
-else:
-    st.info("No data available yet. Please add a daily log.")
+        st.info("Add more entries to unlock AI insights.")
 
     else:
-        df = data.sort_values('Date')
-        insights = []
+        df = data.sort_values("Date")
+        df["Detailed_AI_Insight"] = df.apply(
+            generate_detailed_insight, axis=1
+        )
+
+        st.write(df["Detailed_AI_Insight"].iloc[-1])
+
         # Rule: 3 consecutive low mood days
         if len(df) >= 3:
             last3 = df['Mood'].tail(3)
@@ -339,6 +340,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
