@@ -12,6 +12,8 @@ import os
 import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
+st.write("OS module loaded:", os)
+
 conn = sqlite3.connect("wellness.db", check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute("""
@@ -340,6 +342,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
