@@ -318,15 +318,23 @@ elif choice == "AI Insights":
     if data.empty:
         st.info("Add more entries to unlock AI insights.")
     else:
-        # Sort data
+        # Sort data by date
         df = data.sort_values("Date").copy()
 
-        # Generate detailed AI insights
+        # =========================
+        # Generate Detailed AI Insights
+        # =========================
         df["Detailed_AI_Insight"] = df.apply(lambda row: generate_detailed_insight(row, df), axis=1)
 
         # Display latest AI insight
         st.subheader("Latest AI Insight")
-        st.write(df["Detailed_AI_Insight"].iloc[-1])
+        st.markdown(df["Detailed_AI_Insight"].iloc[-1].replace("\n", "  \n"))
+
+        # Optionally display all insights
+        with st.expander("View All Past AI Insights"):
+            for insight in df["Detailed_AI_Insight"]:
+                st.markdown(insight.replace("\n", "  \n"))
+                st.markdown("---")  # Separator between entries
 
         # =========================
         # Pattern-based insights
@@ -368,7 +376,7 @@ elif choice == "AI Insights":
                 f'{len(mismatch)} recent entries show mismatch between text sentiment and reported mood.'
             ))
 
-        # Display all collected insights
+        # Display pattern-based suggestions
         st.subheader("Detected Patterns / Suggestions")
         if not insights:
             st.success("No concerning patterns detected — keep logging consistently!")
@@ -389,6 +397,7 @@ elif choice == "AI Insights":
             )
             pred = model.predict([[next_sleep]])[0]
             st.info(f'Predicted mood (1–5): {pred:.2f} based on sleep hours using a simple linear model')
+
 
 
 # -----------------------------
@@ -433,6 +442,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
