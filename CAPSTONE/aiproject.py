@@ -31,46 +31,6 @@ CREATE TABLE IF NOT EXISTS wellness (
 conn.commit()
 
 
-def generate_detailed_insight(row):
-    insights = []
-
-    if row["Sleep"] < 6:
-        insights.append(
-            "Your sleep duration is below the recommended level. "
-            "Consistently low sleep can impact memory, focus, emotional balance, "
-            "and academic performance. Maintaining a fixed sleep schedule and "
-            "reducing screen exposure before bedtime may help improve sleep quality."
-        )
-
-    if row["ScreenTime"] > 6:
-        insights.append(
-            "High screen time was recorded. Extended screen exposure can contribute "
-            "to eye strain, mental fatigue, and increased stress levels. Taking "
-            "regular screen breaks and engaging in offline activities is advised."
-        )
-
-    if row["Stress"] >= 4:
-        insights.append(
-            "Elevated stress levels were detected. Prolonged stress may negatively "
-            "affect mental health and productivity. Relaxation techniques such as "
-            "deep breathing, physical activity, or journaling may help reduce stress."
-        )
-
-    if row["Mood"] <= 2:
-        insights.append(
-            "Low mood scores were observed. Tracking emotional patterns over time "
-            "can help identify triggers. If low mood persists, reaching out to "
-            "friends, family, or professionals may be beneficial."
-        )
-
-    if not insights:
-        return (
-            "Your wellness indicators are within a healthy range. "
-            "Continue maintaining balanced habits related to sleep, screen time, "
-            "and stress management."
-        )
-
-    return " ".join(insights)
 
 # -----------------------------
 # Config & Constants
@@ -278,7 +238,47 @@ elif choice == "AI Insights":
         # Screen time
     if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
             insights.append(('Screen & Stress', 'High average screen time is associated with higher stress. Introduce short screen breaks.'))
+    
+def generate_detailed_insight(row):
+    insights = []
 
+    if row["Sleep"] < 6:
+        insights.append(
+            "Your sleep duration is below the recommended level. "
+            "Consistently low sleep can impact memory, focus, emotional balance, "
+            "and academic performance. Maintaining a fixed sleep schedule and "
+            "reducing screen exposure before bedtime may help improve sleep quality."
+        )
+
+    if row["ScreenTime"] > 6:
+        insights.append(
+            "High screen time was recorded. Extended screen exposure can contribute "
+            "to eye strain, mental fatigue, and increased stress levels. Taking "
+            "regular screen breaks and engaging in offline activities is advised."
+        )
+
+    if row["Stress"] >= 4:
+        insights.append(
+            "Elevated stress levels were detected. Prolonged stress may negatively "
+            "affect mental health and productivity. Relaxation techniques such as "
+            "deep breathing, physical activity, or journaling may help reduce stress."
+        )
+
+    if row["Mood"] <= 2:
+        insights.append(
+            "Low mood scores were observed. Tracking emotional patterns over time "
+            "can help identify triggers. If low mood persists, reaching out to "
+            "friends, family, or professionals may be beneficial."
+        )
+
+    if not insights:
+        return (
+            "Your wellness indicators are within a healthy range. "
+            "Continue maintaining balanced habits related to sleep, screen time, "
+            "and stress management."
+        )
+
+    return " ".join(insights)
         # Sentiment mismatch
     recent = df.tail(7)
     mismatch = []
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
