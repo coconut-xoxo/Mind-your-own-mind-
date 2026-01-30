@@ -362,22 +362,6 @@ elif choice == "AI Insights":
             for title, text in insights:
                 st.warning(f"**{title}**: {text}")
 
-        # Optional: Simple Mood Prediction Demo
-        if len(df) >= 5:
-            st.markdown('### Mood Prediction (demo)')
-            X = df[['Sleep']].values
-            y = df['Mood'].values
-            model = LinearRegression().fit(X, y)
-            next_sleep = st.number_input(
-    'If you sleep (hrs) tomorrow...', 
-    min_value=0.0, 
-    max_value=24.0, 
-    value=7.0, 
-    step=0.5,
-    key="next_sleep_input" )
-
-            pred = model.predict([[next_sleep]])[0]
-            st.info(f'Predicted mood (1–5): {pred:.2f} based on sleep hours using a simple linear model')
 
         # =========================
         # Pattern-based insights
@@ -478,6 +462,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
