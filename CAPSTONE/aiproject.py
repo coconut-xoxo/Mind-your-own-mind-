@@ -222,6 +222,9 @@ elif choice == "AI Insights":
         # Sort the data by Date
         df = data.sort_values("Date").copy()  # .copy() to avoid SettingWithCopyWarning
 
+        # Initialize insights list
+        insights = []
+
         # Generate AI insights for each row
         df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
 
@@ -231,46 +234,57 @@ elif choice == "AI Insights":
         # Optional: show the full table with insights
         st.dataframe(df)
 
-            # Rule: 3 consecutive low mood days
-            if len(df) >= 3:
-                last3 = df['Mood'].tail(3)
-                if all(last3 < 3):
-                    insights.append(('Low mood streak', "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."))
+        # =========================
+        # Pattern-based insights
+        # =========================
 
-            # Sleep correlation
-            if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
-                insights.append(('Sleep & Mood', 'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'))
-            
-            # Screen time
-            if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
-                insights.append(('Screen & Stress', 'High average screen time is associated with higher stress. Introduce short screen breaks.'))
+        # Rule: 3 consecutive low mood days
+        if len(df) >= 3:
+            last3 = df['Mood'].tail(3)
+            if all(last3 < 3):
+                insights.append((
+                    'Low mood streak',
+                    "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."
+                ))
 
-            # Sentiment mismatch
-            recent = df.tail(7)
-            mismatch = []
-            for _, row in recent.iterrows():
-                if (row['Sentiment'] < -0.2 and row['Mood'] >= 4) or (row['Sentiment'] > 0.2 and row['Mood'] <= 2):
-                    mismatch.append((row['Date'], row['Mood'], row['Sentiment']))
-            
-            if mismatch:
-                insights.append(('Sentiment vs Mood mismatch', f'{len(mismatch)} recent entries show mismatch between text sentiment and reported mood.'))
+        # Sleep correlation
+        if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
+            insights.append((
+                'Sleep & Mood',
+                'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'
+            ))
 
-            # Display all collected insights
-            if not insights:
-                st.success('No concerning patterns detected — keep logging consistently!')
-            else:
-                for title, text in insights:
-                    st.warning(f"**{title}**: {text}")
+        # Screen time
+        if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
+            insights.append((
+                'Screen & Stress',
+                'High average screen time is associated with higher stress. Introduce short screen breaks.'
+            ))
 
-            # Simple Regression demo
-            if len(df) >= 5:
-                st.markdown('### Mood Prediction (demo)')
-                X = df[['Sleep']].values
-                y = df['Mood'].values
-                model = LinearRegression().fit(X, y)
-                next_sleep = st.number_input('If you sleep (hrs) tomorrow...', min_value=0.0, max_value=24.0, value=7.0, step=0.5)
-                pred = model.predict([[next_sleep]])[0]
-                st.info(f'Predicted mood (1–5): {pred:.2f} based on sleep hours using a simple linear model')
+        # Sentiment mismatch
+        recent = df.tail(7)
+        mismatch = []
+        for _, row in recent.iterrows():
+            if (row['Sentiment'] < -0.2 and row['Mood'] >= 4) or (row['Sentiment'] > 0.2 and row['Mood'] <= 2):
+                mismatch.append((row['Date'], row['Mood'], row['Sentiment']))
+        if mismatch:
+            insights.append((
+                'Sentiment vs Mood mismatch',
+                f'{len(mismatch)} recent entries show mismatch between text sentiment and reported mood.'
+            ))
+
+        # Display all collected insights
+        if not insights:
+            st.success('No concerning patterns detected — keep logging consistently!')
+        else:
+            for title, text in insights:
+                st.warning(f"**{title}**: {text}")
+
+        # =========================
+        # Simple Regression demo
+        # =========================
+        if len(df) >= 5:
+            st.markdown('### Mood Predic
 
 # -----------------------------
 # Premium / Business ideas
@@ -314,6 +328,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
