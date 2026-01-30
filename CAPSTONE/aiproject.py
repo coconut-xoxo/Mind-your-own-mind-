@@ -320,15 +320,17 @@ elif choice == "AI Insights":
     else:
         # Sort data
         df = data.sort_values("Date").copy()
-        
+
         # Generate detailed AI insights
         df["Detailed_AI_Insight"] = df.apply(lambda row: generate_detailed_insight(row, df), axis=1)
-        
+
         # Display latest AI insight
         st.subheader("Latest AI Insight")
         st.write(df["Detailed_AI_Insight"].iloc[-1])
 
-        # Optional: Pattern-based suggestions (like low mood streak, sleep correlation)
+        # =========================
+        # Pattern-based insights
+        # =========================
         insights = []
 
         # Rule: 3 consecutive low mood days
@@ -354,43 +356,7 @@ elif choice == "AI Insights":
                 'High average screen time is associated with higher stress. Introduce short screen breaks.'
             ))
 
-        # Display pattern-based insights
-        st.subheader("Detected Patterns / Suggestions")
-        if not insights:
-            st.success("No concerning patterns detected — keep logging consistently!")
-        else:
-            for title, text in insights:
-                st.warning(f"**{title}**: {text}")
-
-
-        # =========================
-        # Pattern-based insights
-        # =========================
-
-        # Rule: 3 consecutive low mood days
-        if len(df) >= 3:
-            last3 = df['Mood'].tail(3)
-            if all(last3 < 3):
-                insights.append((
-                    'Low mood streak',
-                    "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."
-                ))
-
-        # Sleep correlation
-        if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
-            insights.append((
-                'Sleep & Mood',
-                'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'
-            ))
-
-        # Screen time
-        if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
-            insights.append((
-                'Screen & Stress',
-                'High average screen time is associated with higher stress. Introduce short screen breaks.'
-            ))
-
-        # Sentiment mismatch
+        # Sentiment vs Mood mismatch
         recent = df.tail(7)
         mismatch = []
         for _, row in recent.iterrows():
@@ -403,12 +369,16 @@ elif choice == "AI Insights":
             ))
 
         # Display all collected insights
+        st.subheader("Detected Patterns / Suggestions")
         if not insights:
-            st.success('No concerning patterns detected — keep logging consistently!')
+            st.success("No concerning patterns detected — keep logging consistently!")
         else:
             for title, text in insights:
                 st.warning(f"**{title}**: {text}")
 
+        # =========================
+        # Mood Prediction Demo
+        # =========================
         if len(df) >= 5:
             st.markdown('### Mood Prediction (demo)')
             X = df[['Sleep']].values
@@ -419,6 +389,7 @@ elif choice == "AI Insights":
             )
             pred = model.predict([[next_sleep]])[0]
             st.info(f'Predicted mood (1–5): {pred:.2f} based on sleep hours using a simple linear model')
+
 
 # -----------------------------
 # Premium / Business ideas
@@ -462,6 +433,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
