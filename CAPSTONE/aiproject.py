@@ -42,14 +42,14 @@ def generate_detailed_insight(row):
             "reducing screen exposure before bedtime may help improve sleep quality."
         )
 
-    if row["Screen Time (hrs)"] > 6:
+    if row["ScreenTime"] > 6:
         insights.append(
             "High screen time was recorded. Extended screen exposure can contribute "
             "to eye strain, mental fatigue, and increased stress levels. Taking "
             "regular screen breaks and engaging in offline activities is advised."
         )
 
-    if row["Stress Level"] >= 4:
+    if row["Stress"] >= 4:
         insights.append(
             "Elevated stress levels were detected. Prolonged stress may negatively "
             "affect mental health and productivity. Relaxation techniques such as "
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
