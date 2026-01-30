@@ -240,7 +240,7 @@ elif choice == "AI Insights":
             insights.append(('Screen & Stress', 'High average screen time is associated with higher stress. Introduce short screen breaks.'))
     
     def generate_detailed_insight(row):
-    insights = []
+       insights = []
 
     if row["Sleep"] < 6:
         insights.append(
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
