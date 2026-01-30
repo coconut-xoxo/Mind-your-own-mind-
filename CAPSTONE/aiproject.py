@@ -13,8 +13,8 @@ import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
 DATA_FILE = "wellness_data.csv"
+df = pd.read_csv(DATA_FILE) # This creates the 'df' variable
 st.write(df.columns)
-
 
 conn = sqlite3.connect("wellness.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
