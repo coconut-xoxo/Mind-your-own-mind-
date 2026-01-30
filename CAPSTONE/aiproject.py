@@ -34,7 +34,7 @@ conn.commit()
 def generate_detailed_insight(row):
     insights = []
 
-    if row["Sleep Hours"] < 6:
+    if row["Sleep"] < 6:
         insights.append(
             "Your sleep duration is below the recommended level. "
             "Consistently low sleep can impact memory, focus, emotional balance, "
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
