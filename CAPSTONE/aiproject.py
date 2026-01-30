@@ -9,14 +9,70 @@ from textblob import TextBlob
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import os
+import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
+conn = sqlite3.connect("wellness.db", check_same_thread=False)
+cursor = conn.cursor()
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS wellness (
+    date TEXT,
+    mood INTEGER,
+    sleep REAL,
+    stress INTEGER,
+    screen REAL,
+    sentiment REAL
+)
+""")
+conn.commit()
+
+
+def generate_detailed_insight(row):
+    insights = []
+
+    if row["Sleep Hours"] < 6:
+        insights.append(
+            "Your sleep duration is below the recommended level. "
+            "Consistently low sleep can impact memory, focus, emotional balance, "
+            "and academic performance. Maintaining a fixed sleep schedule and "
+            "reducing screen exposure before bedtime may help improve sleep quality."
+        )
+
+    if row["Screen Time (hrs)"] > 6:
+        insights.append(
+            "High screen time was recorded. Extended screen exposure can contribute "
+            "to eye strain, mental fatigue, and increased stress levels. Taking "
+            "regular screen breaks and engaging in offline activities is advised."
+        )
+
+    if row["Stress Level"] >= 4:
+        insights.append(
+            "Elevated stress levels were detected. Prolonged stress may negatively "
+            "affect mental health and productivity. Relaxation techniques such as "
+            "deep breathing, physical activity, or journaling may help reduce stress."
+        )
+
+    if row["Mood"] <= 2:
+        insights.append(
+            "Low mood scores were observed. Tracking emotional patterns over time "
+            "can help identify triggers. If low mood persists, reaching out to "
+            "friends, family, or professionals may be beneficial."
+        )
+
+    if not insights:
+        return (
+            "Your wellness indicators are within a healthy range. "
+            "Continue maintaining balanced habits related to sleep, screen time, "
+            "and stress management."
+        )
+
+    return " ".join(insights)
 
 # -----------------------------
 # Config & Constants
 # -----------------------------
 st.set_page_config(page_title="Mind Your Own Mind", layout="wide", initial_sidebar_state="expanded")
-DATA_FILE = "wellness_data.csv"
+
 
 # -----------------------------
 # Utilities: load/save CSV and sentiment
@@ -193,7 +249,13 @@ elif choice == "Visual Insights":
 elif choice == "AI Insights":
     st.header("🤖 AI Insights & Suggestions")
     if data.empty:
-        st.info('Add more entries to unlock AI insights.')
+        st.info('Add more entries to unlock AI insights.') 
+    if not df.empty:
+    df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
+    st.write(df["Detailed_AI_Insight"].iloc[-1])
+else:
+    st.info("No data available yet. Please add a daily log.")
+
     else:
         df = data.sort_values('Date')
         insights = []
@@ -270,14 +332,14 @@ with col_a:
         else:
             st.info('No data to download.')
 with col_b:
-    if st.button('Clear All Data'):
-        if os.path.exists(DATA_FILE):
-            os.remove(DATA_FILE)
-            st.success('Data cleared. Refresh to see changes.')
-        else:
-            st.info('No data file found.')
+    if st.button("Clear All Data"):
+        cursor.execute("DELETE FROM wellness")
+        conn.commit()
+        st.success("All stored data has been permanently cleared.")
+
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
