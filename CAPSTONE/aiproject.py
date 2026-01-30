@@ -224,7 +224,7 @@ elif choice == "AI Insights":
             insights = []  # Initialize first!
             
             # Generate the detailed row-by-row insight
-            df["Detailed_AI_Insight"] = df.apply(generate_detailed_insight, axis=1)
+            df["AI Insights"] = df.apply(generate_detailed_insight, axis=1)
             st.write(df["Detailed_AI_Insight"].iloc[-1])
 
             # Rule: 3 consecutive low mood days
@@ -310,6 +310,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
