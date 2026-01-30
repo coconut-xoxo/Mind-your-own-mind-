@@ -307,7 +307,7 @@ def generate_detailed_insight(row):
 # -----------------------------
 # Premium / Business ideas
 # -----------------------------
- elif choice == "Premium":
+elif choice == "Premium":
     st.header("✨ Premium Features (Mock)")
     st.markdown("This section shows ideas you could build for a paid tier or institutional product:")
     st.markdown("- Weekly PDF summaries with embedded charts and recommendations\n- Personalized AI coach (chat + action plans)\n- School-wide dashboards (anonymized) for early intervention\n- Export to Google Sheets / Google Drive sync")
@@ -346,6 +346,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
