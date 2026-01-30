@@ -280,7 +280,7 @@ elif choice == "AI Insights":
             for title, text in insights:
                 st.warning(f"**{title}**: {text}")
 
-         if len(df) >= 5:
+        if len(df) >= 5:
             st.markdown('### Mood Prediction (demo)')
             X = df[['Sleep']].values
             y = df['Mood'].values
@@ -333,6 +333,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
