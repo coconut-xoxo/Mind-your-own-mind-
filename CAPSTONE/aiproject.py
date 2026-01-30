@@ -279,35 +279,88 @@ elif choice == "Daily Log":
 # -----------------------------
 elif choice == "Visual Insights":
     st.header("📈 Visual Insights")
+
     if data.empty:
         st.info('Add entries first in the Daily Log to see visual insights.')
     else:
         df = data.sort_values('Date')
-        # Mood over time (interactive)
+
+        # =========================
+        # Mood over time
+        # =========================
         st.subheader('Mood over Time')
+        st.markdown(
+            "This line graph shows how your mood has changed over time. "
+            "Tracking mood trends can help you identify patterns, such as days of the week when your mood dips or improves. "
+            "Markers indicate individual entries, making it easier to spot sudden changes or improvements."
+        )
         fig = px.line(df, x='Date', y='Mood', markers=True, title='Mood Over Time', range_y=[1,5])
         fig.update_layout(template='plotly_white', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig, use_container_width=True)
 
+        # =========================
         # Sleep vs Mood scatter
+        # =========================
         st.subheader('Sleep vs Mood')
-        fig2 = px.scatter(df, x='Sleep', y='Mood', size='Exercise', color='Stress', hover_data=['Date','Journal'], title='Sleep vs Mood')
+        st.markdown(
+            "This scatter plot shows the relationship between your sleep duration and reported mood. "
+            "The size of each point represents the amount of exercise you did that day, and the color indicates stress levels. "
+            "This allows you to visually assess whether more sleep, less stress, or exercise correlates with higher mood scores."
+        )
+        fig2 = px.scatter(
+            df,
+            x='Sleep',
+            y='Mood',
+            size='Exercise',
+            color='Stress',
+            hover_data=['Date', 'Journal'],
+            title='Sleep vs Mood'
+        )
+        fig2.update_layout(template='plotly_white', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig2, use_container_width=True)
 
-        # Screen time & Stress bar (last 14)
+        # =========================
+        # Screen time & Stress bar (last 14 days)
+        # =========================
         st.subheader('Screen Time & Stress (Recent)')
+        st.markdown(
+            "This grouped bar chart shows your screen time and stress levels over the past 14 days. "
+            "It helps you see if high screen time coincides with higher stress, enabling you to identify patterns and adjust habits accordingly."
+        )
         recent = df.tail(14)
         fig3 = go.Figure()
-        fig3.add_trace(go.Bar(x=recent['Date'].dt.strftime('%b %d'), y=recent['ScreenTime'], name='Screen (hrs)'))
-        fig3.add_trace(go.Bar(x=recent['Date'].dt.strftime('%b %d'), y=recent['Stress'], name='Stress (1-10)'))
-        fig3.update_layout(barmode='group', title='Recent Screen Time vs Stress')
+        fig3.add_trace(go.Bar(
+            x=recent['Date'].dt.strftime('%b %d'),
+            y=recent['ScreenTime'],
+            name='Screen Time (hrs)'
+        ))
+        fig3.add_trace(go.Bar(
+            x=recent['Date'].dt.strftime('%b %d'),
+            y=recent['Stress'],
+            name='Stress (1-10)'
+        ))
+        fig3.update_layout(
+            barmode='group',
+            title='Recent Screen Time vs Stress',
+            template='plotly_white',
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig3, use_container_width=True)
 
+        # =========================
         # Correlation heatmap
+        # =========================
         st.subheader('Correlation Matrix')
-        corr = df[['Mood','Sleep','ScreenTime','Exercise','Stress','Sentiment']].corr()
-        fig4 = px.imshow(corr, text_auto=True, title='Correlation between measures')
+        st.markdown(
+            "This heatmap shows the correlations between different tracked measures: mood, sleep, screen time, exercise, stress, and sentiment. "
+            "A positive correlation (closer to 1) indicates that the two measures tend to increase together, while a negative correlation (closer to -1) indicates an inverse relationship. "
+            "This helps you understand which factors might influence your mood the most."
+        )
+        corr = df[['Mood', 'Sleep', 'ScreenTime', 'Exercise', 'Stress', 'Sentiment']].corr()
+        fig4 = px.imshow(corr, text_auto=True, title='Correlation between Measures', color_continuous_scale='RdBu_r', zmin=-1, zmax=1)
+        fig4.update_layout(template='plotly_white', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig4, use_container_width=True)
+
 
 # -----------------------------
 # AI Insights
@@ -464,6 +517,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
