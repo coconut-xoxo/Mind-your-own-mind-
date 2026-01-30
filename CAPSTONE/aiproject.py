@@ -273,6 +273,7 @@ elif choice == "AI Insights":
                 insights.append(('Low mood streak', "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."))
        # Sleep correlation
 
+    insights[]
     if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
             insights.append(('Sleep & Mood', 'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'))
         # Screen time
@@ -346,6 +347,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
