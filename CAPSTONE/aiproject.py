@@ -14,6 +14,26 @@ from datetime import datetime
 from streamlit_option_menu import option_menu
 DATA_FILE = "wellness_data.csv"
 df = pd.read_csv(DATA_FILE) # This creates the 'df' variable
+def generate_detailed_insight(row):
+    """
+    Takes a row of the DataFrame and returns a string insight.
+    Example: uses Mood, Sleep, Stress, Sentiment columns.
+    """
+    mood = row.get('Mood', 0)
+    sleep = row.get('Sleep', 0)
+    stress = row.get('Stress', 0)
+    sentiment = row.get('Sentiment', 0)
+
+    insight = f"Mood: {mood}, Sleep: {sleep} hrs, Stress: {stress}, Sentiment: {sentiment}"
+
+    # You can add more rules here if you want
+    if mood < 3:
+        insight += " → Low mood detected."
+    if sleep < 6:
+        insight += " → Low sleep hours."
+    if stress > 6:
+        insight += " → High stress."
+    return insight
 
 
 conn = sqlite3.connect("wellness.db", check_same_thread=False)
@@ -333,6 +353,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
