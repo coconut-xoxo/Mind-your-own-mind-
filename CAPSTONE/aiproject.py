@@ -330,14 +330,8 @@ elif choice == "AI Insights":
         st.subheader("Latest AI Insight")
         st.markdown(df["Detailed_AI_Insight"].iloc[-1].replace("\n", "  \n"))
 
-        # Optionally display all insights
-        with st.expander("View All Past AI Insights"):
-            for insight in df["Detailed_AI_Insight"]:
-                st.markdown(insight.replace("\n", "  \n"))
-                st.markdown("---")  # Separator between entries
-
         # =========================
-        # Pattern-based insights
+        # Pattern-based insights (detailed)
         # =========================
         insights = []
 
@@ -346,22 +340,29 @@ elif choice == "AI Insights":
             last3 = df['Mood'].tail(3)
             if all(last3 < 3):
                 insights.append((
-                    'Low mood streak',
-                    "You've reported low mood for several days. Consider reaching out to a friend, family member, or counselor."
+                    'Low Mood Streak',
+                    "You've reported low mood for three consecutive days. Sustained low mood can impact concentration, motivation, and overall well-being. "
+                    "It's important to pause and reflect on what may be causing these feelings. Consider talking to someone you trust—a friend, family member, or counselor. "
+                    "Sometimes simply expressing your emotions or sharing your experiences can provide relief and clarity. "
+                    "Additionally, small daily adjustments like a walk outside, mindful breathing, or journaling can help you break the streak and regain balance."
                 ))
 
         # Sleep correlation
         if df['Sleep'].mean() < 6.5 and df['Mood'].mean() < 3.5:
             insights.append((
-                'Sleep & Mood',
-                'Lower sleep appears alongside lower mood. Try prioritizing consistent sleep hours.'
+                'Sleep & Mood Correlation',
+                "Your recent average sleep duration is below 6.5 hours and is accompanied by lower mood scores. Lack of sufficient sleep can exacerbate stress, reduce cognitive performance, "
+                "and affect emotional regulation. Establishing a consistent sleep schedule, avoiding screens before bedtime, and creating a calm sleep environment can significantly improve your mood and focus. "
+                "Pay attention to sleep quality as well as quantity—sometimes shorter, deep sleep is more restorative than longer, disrupted sleep."
             ))
 
         # Screen time
         if df['ScreenTime'].mean() > 5 and df['Stress'].mean() > 6:
             insights.append((
-                'Screen & Stress',
-                'High average screen time is associated with higher stress. Introduce short screen breaks.'
+                'Screen Time & Stress',
+                "High average screen time, especially above 5 hours daily, appears to be associated with elevated stress levels. Prolonged exposure to screens can contribute to eye strain, mental fatigue, and heightened anxiety. "
+                "Try to schedule regular breaks from screens, engage in offline hobbies, or practice activities like reading, drawing, or walking outside. "
+                "Reducing screen time can help lower stress levels, improve focus, and support better sleep hygiene."
             ))
 
         # Sentiment vs Mood mismatch
@@ -372,8 +373,11 @@ elif choice == "AI Insights":
                 mismatch.append((row['Date'], row['Mood'], row['Sentiment']))
         if mismatch:
             insights.append((
-                'Sentiment vs Mood mismatch',
-                f'{len(mismatch)} recent entries show mismatch between text sentiment and reported mood.'
+                'Sentiment vs Mood Mismatch',
+                f"{len(mismatch)} recent entries show a mismatch between your textual sentiment and self-reported mood. "
+                "This could suggest underlying emotions not immediately visible in your self-report. Reflecting on these discrepancies can enhance self-awareness, "
+                "help you understand your emotional patterns, and improve your ability to communicate feelings effectively. "
+                "Consider journaling or speaking aloud about your experiences to bridge the gap between perceived and expressed emotions."
             ))
 
         # Display pattern-based suggestions
@@ -382,7 +386,25 @@ elif choice == "AI Insights":
             st.success("No concerning patterns detected — keep logging consistently!")
         else:
             for title, text in insights:
-                st.warning(f"**{title}**: {text}")
+                st.warning(f"**{title}**")
+                st.write(text)  # Use write for long paragraphs
+
+        # =========================
+        # View Past AI Insights by Date (interactive)
+        # =========================
+        st.subheader("View Past AI Insights")
+
+        # Ensure Date column is datetime
+        if not pd.api.types.is_datetime64_any_dtype(df['Date']):
+            df['Date'] = pd.to_datetime(df['Date'])
+
+        # Create a dropdown of available dates
+        dates = df['Date'].dt.strftime('%Y-%m-%d').tolist()
+        selected_date = st.selectbox("Select a date to view its AI insight:", dates)
+
+        # Show the insight for the selected date
+        insight_to_show = df.loc[df['Date'].dt.strftime('%Y-%m-%d') == selected_date, "Detailed_AI_Insight"].values[0]
+        st.markdown(insight_to_show.replace("\n", "  \n"))
 
         # =========================
         # Mood Prediction Demo
@@ -442,6 +464,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
