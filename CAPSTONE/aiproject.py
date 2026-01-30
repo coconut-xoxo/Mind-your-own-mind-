@@ -12,6 +12,7 @@ import os
 import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
+DATA_FILE = "wellness_data.csv"
 
 conn = sqlite3.connect("wellness.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -339,6 +340,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
