@@ -14,6 +14,13 @@ from datetime import datetime
 from streamlit_option_menu import option_menu
 DATA_FILE = "wellness_data.csv"
 df = pd.read_csv(DATA_FILE) # This creates the 'df' variable
+if os.path.exists(DATA_FILE):
+    df = pd.read_csv(DATA_FILE)
+else:
+    df = pd.DataFrame(columns=[
+        "Date", "Mood", "Stress", "Sleep", "Notes",
+        "Detection Pattern", "Suggestions"
+    ])
 # ===============================
 # Function to generate detailed AI insights
 # ===============================
@@ -593,6 +600,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
