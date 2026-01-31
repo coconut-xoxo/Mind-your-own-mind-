@@ -13,7 +13,6 @@ import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
 DATA_FILE = "wellness_data.csv"
-df = pd.read_csv(DATA_FILE) # This creates the 'df' variable
 if os.path.exists(DATA_FILE):
     df = pd.read_csv(DATA_FILE)
 else:
@@ -600,6 +599,7 @@ with col_b:
 
 with col_c:
     st.markdown('Built for capstone — customize visuals, sentiment model, and backend for production.')
+
 
 
 
